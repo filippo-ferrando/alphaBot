@@ -2,6 +2,8 @@ import sqlite3
 from sqlite3 import Error
 import time
 
+#prova commit visual studio online
+
 def create_connection(db_file):
     conn = None
     try:

@@ -1,55 +1,31 @@
 '''
-Author: Michele Alladio
+Author: Michele Alladio, Filippo Ferrando
 es:
 '''
 
-#import time
-#import RPi.GPIO as GPIO
-
 import socket as sck, string, time
 
-a = 'W100'
-print(a[1:])
+BUFFER = 4098
 
 def main():
     s = sck.socket(sck.AF_INET, sck.SOCK_STREAM)  #creo un socket TCP / IPv4
-    s.connect(('192.168.0.122', 7002))
+    s.connect(('192.168.0.122', 7000))
+    #s.connect(('localhost', 7001))
 
-    print("COMANDI:\n-W --> avanti\n-S --> indietro\n-D --> destra\n-A --> sinistra\n-STOP --> stop\nI comandi devono essere seguiti da un numero che indica di quanto avanzare e i due argomenti separati da un punto.\nEs:W.100")
+    print("COMANDI:\n-1 --> avanti\n-2 --> indietro\n-3 --> sinistra\n-4 --> destra\n-5 --> stop\n-6 --> avanti-indietro\n-7 --> zigzag\n-8 --> drift\n-9 --> check stato della batteria")
 
     while True:
         command = input().upper().encode()
 
         s.sendall(command)
 
-    '''try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        GPIO.cleanup()'''
+        data = s.recv(BUFFER).decode()
+        print(data)
+
+        if data == 'STOP':
+            s.close()
+            print('Connection closed')
+            break
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-'''import socket as sck
-import string
-import threading as thr
-import time
-
-def main():
-    s = sck.socket(sck.AF_INET, sck.SOCK_STREAM)  #creo un socket TCP / IPv4
-    s.connect(('localhost', 7000))
-
-    while True:
-        message = input("Inserisci il messaggio: ")
-        s.sendall(message.encode())
-
-        data = s.recv(4096)
-        print(data.decode())
-
-if __name__ == "__main__":
-    main()'''

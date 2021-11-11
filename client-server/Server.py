@@ -1,11 +1,34 @@
 '''
-Author: Michele Alladio
+Author: Michele Alladio, Filippo Ferrando
 '''
 
-import threading as thr
+import sqlite3
+from sqlite3 import Error
 import socket as sck
 import time
-import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO, subprocess
+
+def create_connection(db_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+    except Error as e:
+        print(e)
+
+    return conn
+
+def select_task_id(conn, id):   #returna w.1 oppure w.1;s.3
+    cur = conn.cursor()
+    cur.execute(f"SELECT sequenza FROM Movimenti Where id = {id}")
+
+    rows = cur.fetchall()
+
+    for row in rows:
+        return(row[0])
+
+def check_battery():
+    s = subprocess.check_output(['vcgencmd', 'get_throttled'])
+    return s.decode()
 
 class AlphaBot(object):
     
@@ -33,7 +56,7 @@ class AlphaBot(object):
         self.PWMB.start(self.PB)
         self.stop()
 
-    def left(self, sTime=2, speed=25):
+    def left(self, sTime=2, speed=30):
         self.PWMA.ChangeDutyCycle(speed)
         self.PWMB.ChangeDutyCycle(speed)
         self.PWMA.ChangeDutyCycle(speed)
@@ -42,7 +65,6 @@ class AlphaBot(object):
         GPIO.output(self.IN2, GPIO.LOW)
         GPIO.output(self.IN3, GPIO.HIGH)
         GPIO.output(self.IN4, GPIO.LOW)
-        print(f'SINISTRA'.encode())
         time.sleep(sTime)
         self.stop()
         
@@ -53,38 +75,34 @@ class AlphaBot(object):
         GPIO.output(self.IN2, GPIO.LOW)
         GPIO.output(self.IN3, GPIO.LOW)
         GPIO.output(self.IN4, GPIO.LOW)
-        print(f'STOP'.encode())
         
-    def right(self, sTime=2, speed=25):
+    def right(self, sTime=2, speed=30):
         self.PWMA.ChangeDutyCycle(speed)
         self.PWMB.ChangeDutyCycle(speed)
         GPIO.output(self.IN1, GPIO.LOW)
         GPIO.output(self.IN2, GPIO.HIGH)
         GPIO.output(self.IN3, GPIO.LOW)
         GPIO.output(self.IN4, GPIO.HIGH)
-        print(f'DESTRA'.encode())
         time.sleep(sTime)
         self.stop()
 
-    def forward(self, sTime=2, speed=30):
+    def forward(self, sTime=2, speed=40):
         self.PWMA.ChangeDutyCycle(speed)
         self.PWMB.ChangeDutyCycle(speed)
         GPIO.output(self.IN1, GPIO.LOW)
         GPIO.output(self.IN2, GPIO.HIGH)
         GPIO.output(self.IN3, GPIO.HIGH)
         GPIO.output(self.IN4, GPIO.LOW)
-        print(f'AVANTI'.encode())
         time.sleep(sTime)
         self.stop()
 
-    def backward(self, sTime=2, speed=30):
+    def backward(self, sTime=2, speed=40):
         self.PWMA.ChangeDutyCycle(speed)
         self.PWMB.ChangeDutyCycle(speed)
         GPIO.output(self.IN1, GPIO.HIGH)
         GPIO.output(self.IN2, GPIO.LOW)
         GPIO.output(self.IN3, GPIO.LOW)
         GPIO.output(self.IN4, GPIO.HIGH)
-        print(f'INDIETRO'.encode())
         time.sleep(sTime)
         self.stop()
         
@@ -116,7 +134,7 @@ class AlphaBot(object):
 
 def main():
     s = sck.socket(sck.AF_INET, sck.SOCK_STREAM) 
-    s.bind(('0.0.0.0', 7002)) 
+    s.bind(('0.0.0.0', 7000)) 
 
     Ab = AlphaBot()
     
@@ -124,24 +142,43 @@ def main():
     conn, addr = s.accept()
     print(f"Connessione avvenuta con: {addr}")
 
+    connDb = create_connection("./Movimenti.db")
+    
+
     while True:
         data = conn.recv(4096).decode()  
-        command = data.split('.')[0]
-        tempo = int(data.split('.')[1])
-        print(command, tempo)
 
-        if command == 'W':
-            Ab.forward(sTime=tempo)
-        elif command == 'S':
-            Ab.backward(sTime=tempo)
-        elif command == 'D':
-            Ab.right(sTime=tempo)
-        elif command == 'A':
-            Ab.left(sTime=tempo)
-        elif command == 'STOP':
-            Ab.stop() 
+        commandList = select_task_id(connDb, data).split(';')
 
-    s.close()    
+        for command in commandList:
+            if command=='STOP':
+                conn.sendall('STOP'.encode())
+                conn.close()
+                s.close()
+                print('Connection closed')
+                return
+            elif command=='BATTERY-0':
+                if(check_battery()=='00'):
+                    conn.sendall('Battery status: OK'.encode())
+                else:
+                    conn.sendall('Battery status: LOW'.encode())
+            else:
+                conn.sendall(command.encode())
+
+            direction = command.split('-')[0]
+            tempo = float(command.split('-')[1])
+
+            print(f'{command} for {tempo} seconds')
+
+            if direction == 'W':
+                Ab.forward(sTime=tempo)
+            elif direction == 'S':
+                Ab.backward(sTime=tempo)
+            elif direction == 'D':
+                Ab.right(sTime=tempo)
+            elif direction == 'A':
+                Ab.left(sTime=tempo)
+  
     
 if __name__ == "__main__":
     main()

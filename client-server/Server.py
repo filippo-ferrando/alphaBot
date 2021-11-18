@@ -152,6 +152,9 @@ def main():
 
         for command in commandList: #ciclo per eseguire le istruzioni della lista e per controllare se il comando sia uno STOP per fermare il robot o un BATTERY per controllare lo stato della batteria
             if command=='STOP':
+                if connDB != None:
+                    connDB.close()
+                    print("Closed Database")
                 conn.sendall('STOP'.encode())
                 conn.close()
                 s.close()

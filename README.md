@@ -6,6 +6,9 @@ Il robot funziona tramite un sistema client-server TCP e un database (lato serve
 ![](https://github.com/filippo-ferrando/alphaBot/blob/main/foto.jpg)
 
 ## Client-Server
+
+![](https://github.com/filippo-ferrando/alphaBot/blob/main/schema.png)
+
 Utilizzando le librerie base dell'alphabot siamo in primo luogo riusciti a farlo muovere mandando tramite il client istruzioni come avanti, indietro, ecc. e il tempo per il quale questo doveva muoversi.
 Nella seconda versione di questo programma utilizziamo un databse con sia i movimenti base che movenze più complesse e invece di mandare tutta l'istruzione tramite il client, mandiamo solamente l'id dell'istruzione nel DB.
 

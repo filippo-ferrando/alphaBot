@@ -11,20 +11,20 @@ import RPi.GPIO as GPIO, subprocess
 def create_connection(db_file): #funzione per connettere il database allo script
     conn = None
     try:
-        conn = sqlite3.connect(db_file)
-    except Error as e:
+        conn = sqlite3.connect(db_file) #ettiva connessione al db
+    except Error as e: #gestione dell'errore
         print(e)
 
     return conn
 
 def select_task_id(conn, id):   #returna w.1 oppure w.1;s.3 in base alla query scritta sul db
     cur = conn.cursor()         #in pratica questo serve solamente a fare le query per fare il retrive della lista di comandi
-    cur.execute(f"SELECT sequenza FROM Movimenti Where id = {id}")
+    cur.execute(f"SELECT sequenza FROM Movimenti Where id = {id}") #esecuzione della query
 
-    rows = cur.fetchall()
+    rows = cur.fetchall() #applicazione della query sul database
 
     for row in rows:
-        return(row[0])
+        return(row[0]) #retrive della tabella creata
 
 def check_battery(): # funzione che serve a returnare lo stato della batteria edl raspberry pi
     s = subprocess.check_output(['vcgencmd', 'get_throttled'])

@@ -1,5 +1,5 @@
 '''
-Author: Michele Alladio, Filippo Ferrando
+Authors: Michele Alladio, Filippo Ferrando
 questo è il client (che gira sul pc che controlla il roboto), la sua funzione è soltanto quella di mandare il numero dell'istruzione al server sull'alphabot in modo che questo possa poi fare le query necessarie
 '''
 

@@ -1,5 +1,5 @@
 '''
-Author: Michele Alladio, Filippo Ferrando
+Authors: Michele Alladio, Filippo Ferrando
 '''
 
 import sqlite3

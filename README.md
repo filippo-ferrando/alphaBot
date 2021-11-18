@@ -1,6 +1,6 @@
 # alphaBot :rocket:
 
-### Progetto scolastico sugli alphabot di (Alladio Michele)[https://github.com/MicheleAlladioAKAMich] e (Ferrando Filippo)[https://github.com/filippo-ferrando]
+### Progetto scolastico sugli alphabot di [Alladio Michele](https://github.com/MicheleAlladioAKAMich) e [Ferrando Filippo](https://github.com/filippo-ferrando)
 Il robot funziona tramite un sistema client-server TCP e un database (lato server) contenente le istruzioni per fare determinati movimenti.
 
 ![](https://github.com/filippo-ferrando/alphaBot/blob/main/foto.jpg)

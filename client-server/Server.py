@@ -143,6 +143,12 @@ def main():
     print(f"Connessione avvenuta con: {addr}")
 
     connDb = create_connection("./Movimenti.db")
+    if connDB == None:
+        print("Database: 404")
+        conn.sendall('STOP'.encode())
+        conn.close()
+        s.close()
+
     
 
     while True:

@@ -1,4 +1,5 @@
 # alphaBot :rocket:
+@MicheleAlladioAKAMich
 ### Progetto scolastico sugli alphabot di Alladio Michele e Ferrando Filippo
 Il robot funziona tramite un sistema client-server TCP e un database (lato server) contenente le istruzioni per fare determinati movimenti.
 

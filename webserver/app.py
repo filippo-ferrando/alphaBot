@@ -114,7 +114,7 @@ def index():
         #print(request.form.get('forward'))
         if request.form.get('forward') == 'fw':
             print("Avanti")
-            Ab.forward(sTime=time)
+            ab.forward(sTime=time)
         elif  request.form.get('backward') == 'bw':
             print("Indietro")
             ab.backward(sTime=time)
@@ -132,4 +132,4 @@ def index():
     return render_template("index.html")
 
 if __name__ == '__main__':
-    app.run(debug=True, host='localhost')
+    app.run(debug=True, host='0.0.0.0')

@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO, subprocess
 app = Flask(__name__)
 
 class AlphaBot(object):
-    
+
     def __init__(self, in1=13, in2=12, ena=6, in3=21, in4=20, enb=26):
         self.IN1 = in1
         self.IN2 = in2
@@ -40,7 +40,7 @@ class AlphaBot(object):
         GPIO.output(self.IN4, GPIO.LOW)
         time.sleep(sTime)
         self.stop()
-        
+
     def stop(self):
         self.PWMA.ChangeDutyCycle(0)
         self.PWMB.ChangeDutyCycle(0)
@@ -48,7 +48,7 @@ class AlphaBot(object):
         GPIO.output(self.IN2, GPIO.LOW)
         GPIO.output(self.IN3, GPIO.LOW)
         GPIO.output(self.IN4, GPIO.LOW)
-        
+
     def right(self, sTime=2, speed=30):
         self.PWMA.ChangeDutyCycle(speed)
         self.PWMB.ChangeDutyCycle(speed)
@@ -78,15 +78,15 @@ class AlphaBot(object):
         GPIO.output(self.IN4, GPIO.HIGH)
         time.sleep(sTime)
         self.stop()
-        
+
     def set_pwm_a(self, value):
         self.PA = value
         self.PWMA.ChangeDutyCycle(self.PA)
 
     def set_pwm_b(self, value):
         self.PB = value
-        self.PWMB.ChangeDutyCycle(self.PB)    
-        
+        self.PWMB.ChangeDutyCycle(self.PB)
+
     def set_motor(self, left, right):
         if (right >= 0) and (right <= 100):
             GPIO.output(self.IN1, GPIO.HIGH)
@@ -128,7 +128,7 @@ def index():
             print("Unknown")
     elif request.method == 'GET':
         return render_template('index.html')
-    
+
     return render_template("index.html")
 
 if __name__ == '__main__':

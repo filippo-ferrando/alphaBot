@@ -106,7 +106,7 @@ class AlphaBot(object):
             self.PWMB.ChangeDutyCycle(0 - left)
 
 ab = AlphaBot()
-time = 0.5
+dtime = 0.5
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -114,16 +114,16 @@ def index():
         #print(request.form.get('forward'))
         if request.form.get('forward') == 'fw':
             print("Avanti")
-            ab.forward(sTime=time)
+            ab.forward(sTime=dtime)
         elif  request.form.get('backward') == 'bw':
             print("Indietro")
-            ab.backward(sTime=time)
+            ab.backward(sTime=dtime)
         elif  request.form.get('left') == 'lt':
             print("Sinistra")
-            ab.right(sTime=time)
+            ab.right(sTime=dtime)
         elif  request.form.get('right') == 'rt':
             print("Destra")
-            ab.right(sTime=time)
+            ab.right(sTime=dtime)
         else:
             print("Unknown")
     elif request.method == 'GET':

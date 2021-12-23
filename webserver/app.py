@@ -1,7 +1,27 @@
+import sqlite3
+from sqlite3 import Error
 from flask import Flask, render_template, request
 import time
 import RPi.GPIO as GPIO, subprocess
 app = Flask(__name__)
+
+def create_connection(db_file): #funzione per connettere il database allo script
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file) #ettiva connessione al db
+    except Error as e: #gestione dell'errore
+        print(e)
+
+    return conn
+
+def select_task_id(conn, id):   #returna w.1 oppure w.1;s.3 in base alla query scritta sul db
+    cur = conn.cursor()         #in pratica questo serve solamente a fare le query per fare il retrive della lista di comandi
+    cur.execute(f"SELECT sequenza FROM Movimenti Where id = {id}") #esecuzione della query
+
+    rows = cur.fetchall() #applicazione della query sul database
+
+    for row in rows:
+        return(row[0]) #retrive della tabella creata
 
 class AlphaBot(object):
 
@@ -108,22 +128,50 @@ class AlphaBot(object):
 ab = AlphaBot()
 dtime = 0.5
 
+dbNotFound = False
+connDb = create_connection("Movimenti.db")
+if connDB == None:
+    print("Database: 404")
+    dbNotFound = True
+
+
+
 @app.route("/", methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         #print(request.form.get('forward'))
-        if request.form.get('forward') == 'fw':
+        if request.form.get('forward') == '▲':
             print("Avanti")
             ab.forward(sTime=dtime)
-        elif  request.form.get('backward') == 'bw':
+        elif  request.form.get('backward') == '▼':
             print("Indietro")
             ab.backward(sTime=dtime)
-        elif  request.form.get('left') == 'lt':
+        elif  request.form.get('left') == '◄':
             print("Sinistra")
-            ab.right(sTime=dtime)
-        elif  request.form.get('right') == 'rt':
+            ab.left(sTime=dtime)
+        elif  request.form.get('right') == '►':
             print("Destra")
             ab.right(sTime=dtime)
+        elif request.form.get('movement'):
+            data = request.form.get('movement')
+            commandList = select_task_id(connDb, data).split(";")
+            for command in commandList:
+                if dbNotFound == False:
+                    direction = comman.split('-')[0]
+                    tempo = float(command.split('-')[1])
+                    print(f"{command} for {tempo} seconds")
+
+            for i in range(direction.lenght()):
+                if direction == 'W':
+                    Ab.forward(sTime=tempo)
+                elif direction == 'S':
+                    Ab.backward(sTime=tempo)
+                elif direction == 'D':
+                    Ab.right(sTime=tempo)
+                elif direction == 'A':
+                    Ab.left(sTime=tempo)
+
+
         else:
             print("Unknown")
     elif request.method == 'GET':

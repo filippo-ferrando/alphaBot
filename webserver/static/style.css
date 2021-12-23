@@ -1,4 +1,55 @@
+@font-face {
+    font-family: 'Pattaya';
+    src: url(Fonts/Pattaya-Regular.ttf);
+}
+
+@font-face {
+    font-family: 'BebasNeue';
+    src: url(Fonts/BebasNeue-Regular.ttf);
+}
+
+@font-face {
+    font-family: 'Pangolin';
+    src: url(Fonts/Pangolin-Regular.ttf);
+}
+
+
 body {
-    background: red;
-    color: yellow;
+    background-color: powderblue;
+}
+
+form{
+    text-align: center;
+}
+
+.button{
+    text-align: center;
+    color: white;
+    font-family: 'BebasNeue', sans-serif;
+    font-size: 40px;
+    background-color: royalblue;
+    border: 0px;
+}
+
+#movementChoice{
+    text-align: center;
+    color: black;
+    font-family: 'BebasNeue', sans-serif;
+    font-size: 20px;
+    background-color: white;
+    width: 300px;
+}
+
+h1{
+    font-family: 'Pattaya', sans-serif;
+    color: rebeccapurple;
+    text-align: center;
+    font-size: 80px;
+}
+
+h2{
+    font-family: 'Pangolin', sans-serif;
+    color: royalblue;
+    text-align: center;
+    font-size: 30px;
 }

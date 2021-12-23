@@ -128,16 +128,17 @@ class AlphaBot(object):
 ab = AlphaBot()
 dtime = 0.5
 
-dbNotFound = False
-connDb = create_connection("Movimenti.db")
-if connDB == None:
-    print("Database: 404")
-    dbNotFound = True
-
-
+mDict = {"forward":1,"backward":2, "left":3, "right":4, "stop":5, "fb":6, "zigzag":7, "drift":8}
 
 @app.route("/", methods=['GET', 'POST'])
+
 def index():
+    dbNotFound = False
+    connDb = create_connection("Movimenti.db")
+    if connDb == None:
+        print("Database: 404")
+        dbNotFound = True
+
     if request.method == 'POST':
         #print(request.form.get('forward'))
         if request.form.get('forward') == '▲':
@@ -153,25 +154,22 @@ def index():
             print("Destra")
             ab.right(sTime=dtime)
         elif request.form.get('movement'):
-            data = request.form.get('movement')
-            commandList = select_task_id(connDb, data).split(";")
+            data = request.form.get('movement').lower()
+            commandList = select_task_id(connDb, mDict[data]).split(";")
+            print(commandList)
             for command in commandList:
                 if dbNotFound == False:
-                    direction = comman.split('-')[0]
+                    direction = command.split('-')[0]
                     tempo = float(command.split('-')[1])
                     print(f"{command} for {tempo} seconds")
-
-            for i in range(direction.lenght()):
                 if direction == 'W':
-                    Ab.forward(sTime=tempo)
+                    ab.forward(sTime=tempo)
                 elif direction == 'S':
-                    Ab.backward(sTime=tempo)
+                    ab.backward(sTime=tempo)
                 elif direction == 'D':
-                    Ab.right(sTime=tempo)
+                    ab.right(sTime=tempo)
                 elif direction == 'A':
-                    Ab.left(sTime=tempo)
-
-
+                    ab.left(sTime=tempo)
         else:
             print("Unknown")
     elif request.method == 'GET':

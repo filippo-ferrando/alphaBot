@@ -51,15 +51,14 @@ def select_task_id(conn, id):   #returna w.1 oppure w.1;s.3 in base alla query s
 def history(user, command):
     conn = create_connection("Movimenti.db")
     cur = conn.cursor()         #in pratica questo serve solamente a fare le query per fare il retrive della lista di comandi
-    cur.execute(f"INSERT INTO HISTORY (Utente, Command, Date) VALUES ('{user}', '{command}', '{datetime.today()}')") #esecuzione della query
+    cur.execute(f"INSERT INTO HISTORY (Utente, Command, Date_Log) VALUES ('{user}', '{command}', '{datetime.today()}')") #esecuzione della query
     cur.execute("commit")
     conn.close()
 
 def login_log(user):
     conn = create_connection("Movimenti.db")
-    date = datetime.today()
     cur = conn.cursor()
-    cur.execute(f"INSERT INTO LOG_UTENTI (USERNAME, DATE) VALUES ('{user}', '{date}')")
+    cur.execute(f"INSERT INTO LOG_UTENTI (USERNAME, DATE) VALUES ('{user}', '{datetime.today()}')")
     cur.execute("commit")
     conn.close()
     
@@ -177,22 +176,23 @@ def login():
     error = None
     if request.method == 'POST':
         username = request.form['username']
-        print(username)
+        #* print(username)
         password = request.form['password']
-        print(password)
+        #* print(password)
         completion = validate(username, password)
         if completion == False:
             error = 'Invalid Credentials. Please try again.'
             print(error)
         else:
             login_log(username)
+            print(f"{username} logged in!")
             return redirect(url_for('index'))
     return render_template('login.html', error=error)
 
 
 @app.route(f'/{token}', methods=['GET', 'POST'])
 def index():
-    print("entrato in index")
+    print("--> Servita pagina di login <--")
     dbNotFound = False
     connDb = create_connection("Movimenti.db")
     if connDb == None:
@@ -200,10 +200,9 @@ def index():
         dbNotFound = True
 
     if request.method == 'POST':
-        #print(request.form.get('forward'))
-
+        #* print(request.form.get('forward'))
         if request.form.get('forward') == '▲':
-            #print(username, 'forward')
+            #* print(username)
             history(username, 'forward')
             print("Avanti")
             ab.forward(sTime=dtime)
@@ -221,10 +220,10 @@ def index():
             ab.right(sTime=dtime)
         elif request.form.get('movement'):
             data = request.form.get('movement').lower()
-            print(username, data)
+            #* print(username, data)
             history(username, data)
             commandList = select_task_id(connDb, mDict[data]).split(";")
-            print(commandList)
+            #* print(commandList)
             for command in commandList:
                 if dbNotFound == False:
                     direction = command.split('-')[0]

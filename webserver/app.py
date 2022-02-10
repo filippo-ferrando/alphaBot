@@ -1,6 +1,6 @@
 import sqlite3
 from sqlite3 import Error
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response
 import time, random, string
 import RPi.GPIO as GPIO, subprocess
 from datetime import datetime
@@ -169,7 +169,6 @@ ab = AlphaBot()
 dtime = 0.5
 
 mDict = {"forward":1,"backward":2, "left":3, "right":4, "stop":5, "fb":6, "zigzag":7, "drift":8}
-username = ''
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -186,7 +185,9 @@ def login():
         else:
             login_log(username)
             print(f"{username} logged in!")
-            return redirect(url_for('index'))
+            resp = make_response(redirect(url_for('index')))
+            resp.set_cookie('username', username)
+            return resp
     return render_template('login.html', error=error)
 
 
@@ -203,24 +204,29 @@ def index():
         #* print(request.form.get('forward'))
         if request.form.get('forward') == '▲':
             #* print(username)
+            username = request.cookies.get('username')
             history(username, 'forward')
             print("Avanti")
             ab.forward(sTime=dtime)
         elif  request.form.get('backward') == '▼':
+            username = request.cookies.get('username')
             history(username, 'backward')
             print("Indietro")
             ab.backward(sTime=dtime)
         elif  request.form.get('left') == '◄':
+            username = request.cookies.get('username')
             history(username, 'left')
             print("Sinistra")
             ab.left(sTime=dtime)
         elif  request.form.get('right') == '►':
+            username = request.cookies.get('username')
             history(username, 'right')
             print("Destra")
             ab.right(sTime=dtime)
         elif request.form.get('movement'):
             data = request.form.get('movement').lower()
             #* print(username, data)
+            username = request.cookies.get('username')
             history(username, data)
             commandList = select_task_id(connDb, mDict[data]).split(";")
             #* print(commandList)

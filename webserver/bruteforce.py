@@ -1,7 +1,7 @@
 import requests
 
 
-url = "192.168.0.124:5000"
+url = '192.168.0.124:5000'
 wl = "wordlist.txt"
 
 lst = open(wl, "r")

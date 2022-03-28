@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, make_respo
 import time, random, string
 from datetime import datetime
 import RPi.GPIO as GPIO, subprocess
+from flask import jsonify
 
 
 class AlphaBot(object):
@@ -297,6 +298,44 @@ def index():
         return render_template('index.html')
 
     return render_template("index.html")
+
+
+sDict = {}
+DR = 16
+DL = 19
+GPIO.setup(DR,GPIO.IN,GPIO.PUD_UP)
+GPIO.setup(DL,GPIO.IN,GPIO.PUD_UP)
+@app.route('/api/v1/sensors/obstacles', methods=['GET'])
+def sensors():
+    DR_status = GPIO.input(DR)
+    DL_status = GPIO.input(DL)
+    if((DL_status == 1) and (DR_status == 1)):
+        sDict["left"] = 1
+        sDict["right"] = 1
+    elif((DL_status == 1) and (DR_status == 0)):
+        sDict["left"] = 1
+        sDict["right"] = 0
+    elif((DL_status == 0) and (DR_status == 1)):
+        sDict["left"] = 0
+        sDict["right"] = 1
+    else:
+        sDict["left"] = 0
+        sDict["right"] = 0
+
+    return jsonify(sDict)
+pwmL = 0
+pwmR = 0
+time = 0
+@app.route(f'/api/v1/motors/m2?pwmL={pwmL}&pwmR={pwmR}&time={time}', methods=['GET'])
+def m2():
+    ab.set_pwm_a(pwmR)
+    ab.set_pwm_b(pwmL)
+    GPIO.output(ab.IN1, GPIO.LOW)
+    GPIO.output(ab.IN2, GPIO.HIGH)
+    GPIO.output(ab.IN3, GPIO.HIGH)
+    GPIO.output(ab.IN4, GPIO.LOW)
+    time.sleep(time)
+    ab.stop()
 
 
 #           .--.                  
